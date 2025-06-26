@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Shield, Phone, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -80,7 +79,7 @@ const Header = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-lg leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">LIC Agent</span>
-                <span className="text-xs text-gray-600">Rajesh Kumar ✨</span>
+                <span className="text-xs text-gray-600">Rathi Saravanan ✨</span>
               </div>
             </Link>
 
@@ -107,9 +106,9 @@ const Header = () => {
 
             {/* Contact Button */}
             <div className="hidden md:flex items-center space-x-4">
-              <a href="tel:+919876543210" className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-all duration-300 hover:scale-105 group">
+              <a href="tel:+919901997606" className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-all duration-300 hover:scale-105 group">
                 <Phone className="h-4 w-4 group-hover:animate-pulse" />
-                <span className="text-sm font-medium">+91 98765 43210</span>
+                <span className="text-sm font-medium">+91 99019 97606</span>
               </a>
               <Button asChild size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
                 <Link to="/contact">Get Quote ✨</Link>
@@ -154,9 +153,9 @@ const Header = () => {
                   </Link>
                 ))}
                 <div className="px-4 py-3 border-t border-gray-200 mt-4 space-y-4">
-                  <a href="tel:+919876543210" className="flex items-center space-x-3 text-blue-600 hover:scale-105 transition-all duration-300 p-2 rounded-lg hover:bg-blue-50">
+                  <a href="tel:+919901997606" className="flex items-center space-x-3 text-blue-600 hover:scale-105 transition-all duration-300 p-2 rounded-lg hover:bg-blue-50">
                     <Phone className="h-5 w-5 animate-pulse" />
-                    <span className="font-medium">+91 98765 43210</span>
+                    <span className="font-medium">+91 99019 97606</span>
                   </a>
                   <Button asChild size="sm" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
                     <Link to="/contact" onClick={() => setIsMenuOpen(false)}>Get Quote ✨</Link>

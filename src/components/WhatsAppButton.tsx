@@ -1,4 +1,3 @@
-
 import { MessageCircle, Phone, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -24,8 +23,8 @@ const WhatsAppButton = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '919876543210';
-    const message = 'Hi! I am interested in LIC policies. Please provide more information.';
+    const phoneNumber = '919901997606';
+    const message = 'Hi Rathi! I am interested in LIC policies. Please provide more information.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -78,7 +77,7 @@ const WhatsAppButton = () => {
           
           {/* Call Option */}
           <button
-            onClick={() => window.open('tel:+919876543210')}
+            onClick={() => window.open('tel:+919901997606')}
             className="flex items-center space-x-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
           >
             <Phone className="h-5 w-5" />
@@ -91,7 +90,7 @@ const WhatsAppButton = () => {
       {!isExpanded && (
         <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
           <div className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap relative">
-            Chat with us on WhatsApp! 💬
+            Chat with Rathi on WhatsApp! 💬
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
           </div>
         </div>
