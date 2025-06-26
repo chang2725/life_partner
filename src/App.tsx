@@ -1,31 +1,28 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import LifeInsurance from "./pages/LifeInsurance";
-import Blog from "./pages/Blog";
-import News from "./pages/News";
-import FAQ from "./pages/FAQ";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import WhatsAppButton from './components/WhatsAppButton';
+import Home from './pages/Home';
+import About from './pages/About';
+import LifeInsurance from './pages/LifeInsurance';
+import Blog from './pages/Blog';
+import News from './pages/News';
+import FAQ from './pages/FAQ';
+import Contact from './pages/Contact';
+import NotFound from './pages/NotFound';
+import './App.css';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <Header />
-          <main className="flex-1">
+          <main className="relative">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
@@ -38,10 +35,11 @@ const App = () => (
             </Routes>
           </main>
           <Footer />
+          <WhatsAppButton />
         </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </Router>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
