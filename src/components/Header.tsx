@@ -31,19 +31,22 @@ const Header = () => {
       title: "🛡️ Secure Your Family's Future",
       subtitle: "Get comprehensive life insurance coverage with LIC's trusted policies",
       action: "Get Quote",
-      link: "/contact"
+      link: "/contact",
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "💰 Investment + Insurance",
       subtitle: "Grow your wealth while protecting your loved ones with ULIP plans",
       action: "Explore Plans",
-      link: "/life-insurance"
+      link: "/life-insurance",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "🏠 Tax Benefits up to ₹1.5L",
       subtitle: "Save taxes under Section 80C with LIC premium payments",
       action: "Learn More",
-      link: "/faq"
+      link: "/faq",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     }
   ];
 
@@ -61,41 +64,6 @@ const Header = () => {
 
   return (
     <>
-      {/* Header Slider - Only on Home Page */}
-      {location.pathname === '/' && (
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
-          <Carousel className="relative z-10" opts={{ loop: true, duration: 30 }}>
-            <CarouselContent>
-              {headerSlides.map((slide, index) => (
-                <CarouselItem key={index}>
-                  <div className="flex items-center justify-center px-4 py-3 md:py-4">
-                    <div className="text-center space-y-2 max-w-4xl mx-auto">
-                      <h3 className="text-sm md:text-lg font-bold animate-fade-in">
-                        {slide.title}
-                      </h3>
-                      <p className="text-xs md:text-sm text-blue-100 animate-fade-in" style={{animationDelay: '0.2s'}}>
-                        {slide.subtitle}
-                      </p>
-                      <Button 
-                        asChild 
-                        size="sm" 
-                        className="bg-white text-blue-600 hover:bg-blue-50 transform hover:scale-105 transition-all duration-300 animate-fade-in"
-                        style={{animationDelay: '0.4s'}}
-                      >
-                        <Link to={slide.link}>{slide.action} ✨</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-2 bg-white/20 border-white/30 text-white hover:bg-white/30" />
-            <CarouselNext className="right-2 bg-white/20 border-white/30 text-white hover:bg-white/30" />
-          </Carousel>
-        </div>
-      )}
-
       {/* Main Header */}
       <header className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled 
@@ -199,6 +167,49 @@ const Header = () => {
           )}
         </div>
       </header>
+
+      {/* Header Slider - Only on Home Page - Below navbar */}
+      {location.pathname === '/' && (
+        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <Carousel className="relative z-10" opts={{ loop: true, duration: 30 }}>
+            <CarouselContent>
+              {headerSlides.map((slide, index) => (
+                <CarouselItem key={index}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-4 py-8 md:py-12 max-w-7xl mx-auto">
+                    <div className="space-y-4 animate-fade-in">
+                      <h3 className="text-2xl md:text-4xl font-bold animate-fade-in">
+                        {slide.title}
+                      </h3>
+                      <p className="text-base md:text-lg text-blue-100 animate-fade-in" style={{animationDelay: '0.2s'}}>
+                        {slide.subtitle}
+                      </p>
+                      <Button 
+                        asChild 
+                        size="lg" 
+                        className="bg-white text-blue-600 hover:bg-blue-50 transform hover:scale-105 transition-all duration-300 animate-fade-in"
+                        style={{animationDelay: '0.4s'}}
+                      >
+                        <Link to={slide.link}>{slide.action} ✨</Link>
+                      </Button>
+                    </div>
+                    <div className="relative group">
+                      <div className="absolute -inset-4 bg-gradient-to-r from-white/20 to-purple-400/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+                      <img
+                        src={slide.image}
+                        alt={slide.title}
+                        className="relative rounded-2xl shadow-2xl w-full h-64 md:h-80 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-4 bg-white/20 border-white/30 text-white hover:bg-white/30" />
+            <CarouselNext className="right-4 bg-white/20 border-white/30 text-white hover:bg-white/30" />
+          </Carousel>
+        </div>
+      )}
     </>
   );
 };

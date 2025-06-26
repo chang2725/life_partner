@@ -1,10 +1,11 @@
 
-import { MessageCircle, Phone } from 'lucide-react';
+import { MessageCircle, Phone, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const WhatsAppButton = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isPulsing, setIsPulsing] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,7 +43,7 @@ const WhatsAppButton = () => {
 
       {/* WhatsApp Button */}
       <button
-        onClick={handleWhatsAppClick}
+        onClick={() => setIsExpanded(!isExpanded)}
         className={`relative bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-4 rounded-full shadow-2xl hover:shadow-green-500/50 transition-all duration-300 transform hover:scale-110 group ${
           isPulsing ? 'animate-pulse' : ''
         }`}
@@ -51,7 +52,11 @@ const WhatsAppButton = () => {
         <div className="absolute inset-0 rounded-full border-4 border-green-300 opacity-0 group-hover:opacity-100 animate-ping"></div>
         
         {/* Icon with animation */}
-        <MessageCircle className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+        {isExpanded ? (
+          <X className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
+        ) : (
+          <MessageCircle className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+        )}
         
         {/* Notification dot */}
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse border-2 border-white">
@@ -59,22 +64,38 @@ const WhatsAppButton = () => {
         </div>
       </button>
 
-      {/* Tooltip */}
-      <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-        <div className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap relative">
-          Chat with us on WhatsApp! 💬
-          <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+      {/* Expanded Options */}
+      {isExpanded && (
+        <div className="absolute bottom-full right-0 mb-4 space-y-3 animate-fade-in">
+          {/* WhatsApp Chat */}
+          <button
+            onClick={handleWhatsAppClick}
+            className="flex items-center space-x-3 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-green-500/50 transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
+          >
+            <MessageCircle className="h-5 w-5" />
+            <span className="text-sm font-medium">Chat on WhatsApp</span>
+          </button>
+          
+          {/* Call Option */}
+          <button
+            onClick={() => window.open('tel:+919876543210')}
+            className="flex items-center space-x-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
+          >
+            <Phone className="h-5 w-5" />
+            <span className="text-sm font-medium">Call Now</span>
+          </button>
         </div>
-      </div>
+      )}
 
-      {/* Call alternative button */}
-      <button
-        onClick={() => window.open('tel:+919876543210')}
-        className="absolute -top-16 right-0 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-110 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0"
-        style={{ transitionDelay: '0.1s' }}
-      >
-        <Phone className="h-4 w-4" />
-      </button>
+      {/* Tooltip - only show when not expanded */}
+      {!isExpanded && (
+        <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+          <div className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap relative">
+            Chat with us on WhatsApp! 💬
+            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
