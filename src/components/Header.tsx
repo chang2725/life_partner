@@ -14,6 +14,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const [headerSlides, setHeaderSlides] = useState([]);
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -25,29 +26,53 @@ const Header = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
-  const headerSlides = [
-    {
-      title: "🛡️ Secure Your Family's Future",
-      subtitle: "Get comprehensive life insurance coverage with LIC's trusted policies",
-      action: "Get Quote",
-      link: "/contact",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      title: "💰 Investment + Insurance",
-      subtitle: "Grow your wealth while protecting your loved ones with ULIP plans",
-      action: "Explore Plans",
-      link: "/life-insurance",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      title: "🏠 Tax Benefits up to ₹1.5L",
-      subtitle: "Save taxes under Section 80C with LIC premium payments",
-      action: "Learn More",
-      link: "/faq",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    }
-  ];
+  // const headerSlides = [
+  //   {
+  //     title: "🛡️ Secure Your Family's Future",
+  //     subtitle: "Get comprehensive life insurance coverage with LIC's trusted policies",
+  //     action: "Get Quote",
+  //     link: "/contact",
+  //     image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  //   },
+  //   {
+  //     title: "💰 Investment + Insurance",
+  //     subtitle: "Grow your wealth while protecting your loved ones with ULIP plans",
+  //     action: "Explore Plans",
+  //     link: "/life-insurance",
+  //     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  //   },
+  //   {
+  //     title: "🏠 Tax Benefits up to ₹1.5L",
+  //     subtitle: "Save taxes under Section 80C with LIC premium payments",
+  //     action: "Learn More",
+  //     link: "/faq",
+  //     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  //   }
+  // ];
+
+
+ useEffect(() => {
+  fetch("https://docs.google.com/spreadsheets/d/159sXke3QuEew4k2URQ67lVvadLYg8LKt2zhtFPVN4AY/gviz/tq?tqx=out:json&gid=0")
+    .then(res => res.text())
+    .then(text => {
+      const json = JSON.parse(text.substring(47).slice(0, -2));
+      const rows = json.table.rows;
+
+      // Treat first row as headers
+      const headers = rows[0].c.map(cell => cell?.v ?? '');
+      const data = rows.slice(1).map(row => {
+        return row.c.reduce((acc, cell, idx) => {
+          acc[headers[idx]] = cell?.v ?? '';
+          return acc;
+        }, {});
+      });
+
+      setHeaderSlides(data);
+      console.log("Slides from Sheet:", data);
+    })
+    .catch(err => console.error('Sheet fetch failed:', err));
+}, []);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +83,12 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const getDriveImageURL = (url) => {
+  const match = url.match(/\/d\/(.+?)\//);
+  const id = match ? match[1] : '';
+  return `https://drive.google.com/uc?export=view&id=${id}`;
+};
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -194,11 +225,20 @@ const Header = () => {
                     </div>
                     <div className="relative group">
                       <div className="absolute -inset-4 bg-gradient-to-r from-white/20 to-purple-400/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
-                      <img
-                        src={slide.image}
-                        alt={slide.title}
-                        className="relative rounded-2xl shadow-2xl w-full h-64 md:h-80 object-cover transform group-hover:scale-105 transition-transform duration-500"
-                      />
+                        {/* <iframe
+                            src={slide.image.replace("/view?usp=sharing", "/preview")}
+                            className="rounded-2xl shadow-2xl w-full h-64 md:h-80 transform group-hover:scale-105 transition-transform duration-500"
+                            frameBorder="0"
+                          /> */}
+                          <img
+                            src={slide.image}
+                            alt={slide.title}
+                            className="rounded-2xl shadow-2xl w-full h-64 md:h-80 transform group-hover:scale-105 transition-transform duration-500"
+                          />
+                      {/* <div
+  className="rounded-2xl shadow-2xl w-full h-64 md:h-80 bg-cover bg-center"
+  style={{ backgroundImage: `url(${slide.image})` }}
+></div> */}
                     </div>
                   </div>
                 </CarouselItem>
