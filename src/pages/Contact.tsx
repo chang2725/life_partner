@@ -5,8 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
+import axios from 'axios';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+
 
 const Contact = () => {
+   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || 'http://localhost:3000/api';
+    const contactAnimation = useScrollAnimation();
+  
   const contactInfo = [
     {
       icon: Phone,
@@ -51,7 +59,58 @@ const Contact = () => {
     'Financial Planning Consultation',
     'Other Services'
   ];
+const [formData, setFormData] = useState({
+    fullName: '',
+    phoneNumber: '',
+    email: '',
+    age: '',
+    serviceRequired: '',
+    message: '',
+    agentId: AgentId, // Assuming agentId is 1 for now — fetch dynamically if needed
+  });
+const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const handleChange = (field) => (e) => {
+    setFormData({ ...formData, [field]: e.target.value });
+  };
+
+  const handleServiceChange = (value) => {
+    setFormData({ ...formData, serviceRequired: value });
+  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  const payload = {
+    name: formData.fullName,
+    phoneNumber: formData.phoneNumber,
+    emailId: formData.email,
+    serviceRequired: formData.serviceRequired,
+    messageText: formData.message,
+    agentId: formData.agentId,
+    status: "Active"  // You can make this dynamic if needed
+  };
+
+  try {
+    const response = await axios.post('https://localhost:7024/api/ContactDetail', payload);
+    console.log('Success:', response.data);
+    alert('✅ Your message has been sent successfully!');
+    setFormData({
+      fullName: '',
+      phoneNumber: '',
+      email: '',
+      age: '',
+      serviceRequired: '',
+      message: '',
+      agentId: formData.agentId, // Keep agentId pre-filled
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    alert('❌ Failed to send message. Please check your details and try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   const whyChooseMe = [
     {
       title: '15+ Years Experience',
@@ -136,89 +195,66 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <div className="animate-fade-in">
-              <div className="mb-8">
-                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 rounded-full px-4 py-2 text-sm font-medium text-blue-700 mb-4">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Send Me a Message
+             <div className="py-16 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div ref={contactAnimation.ref} className={`text-center mb-8 transition-all duration-1000 ${contactAnimation.isVisible ? 'animate-slide-up opacity-100' : 'opacity-0 translate-y-10'}`}>
+                      <h2 className="text-4xl font-bold text-white mb-4">Let's Get Started! 🚀</h2>
+                      <p className="text-lg text-blue-100 mb-6">
+                        Fill out the form below to send me your insurance requirements, questions, or how I can assist you.
+                      </p>
+                    </div>
+                    <Card className="border-0 shadow-2xl backdrop-blur-sm bg-white/95 hover:bg-white transition-all duration-300 hover:scale-[1.02]">
+                      <CardContent className="p-8">
+                        <form className="space-y-6" onSubmit={handleSubmit}>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="group">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                              <Input value={formData.fullName} onChange={handleChange('fullName')} required placeholder="Enter your full name" />
+                            </div>
+                            <div className="group">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                              <Input value={formData.phoneNumber} onChange={handleChange('phoneNumber')} required placeholder="Enter your phone number" />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="group">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                              <Input type="email" value={formData.email} onChange={handleChange('email')} required placeholder="Enter your email" />
+                            </div>
+                            <div className="group">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                              <Input value={formData.age} onChange={handleChange('age')} placeholder="Enter your age" />
+                            </div>
+                          </div>
+                          <div className="group">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Service Required</label>
+                            <Select onValueChange={handleServiceChange}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select the service you need" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {services.map((service) => (
+                                  <SelectItem key={service} value={service}>{service}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="group">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+                            <Textarea value={formData.message} onChange={handleChange('message')} required rows={5} placeholder="Tell me about your insurance requirements, questions, or how I can help you..." />
+                          </div>
+                          <div className="flex items-start space-x-2">
+                            <label htmlFor="consent" className="text-sm text-gray-600">I agree to be contacted regarding LIC policies and services. Your information will be kept confidential. 🔒</label>
+                          </div>
+                          <Button type="submit" size="lg" disabled={isSubmitting} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl">
+                            {isSubmitting ? 'Sending...' : <>Send Message <Send className="ml-2 h-5 w-5" /></>}
+                          </Button>
+                        </form>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Let's Start Your Journey 🚀</h2>
-                <p className="text-lg text-gray-600">
-                  Fill out the form below and I'll get back to you within 24 hours with personalized advice.
-                </p>
-              </div>
-              <Card className="border-0 shadow-2xl backdrop-blur-sm bg-white/95 hover:bg-white transition-all duration-300 hover:scale-[1.02]">
-                <CardContent className="p-8">
-                  <form className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="group">
-                        <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                          Full Name *
-                        </label>
-                        <Input placeholder="Enter your full name" required className="group-hover:border-blue-400 group-focus-within:border-blue-500 transition-all duration-300 hover:scale-105" />
-                      </div>
-                      <div className="group">
-                        <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                          Phone Number *
-                        </label>
-                        <Input placeholder="Enter your phone number" required className="group-hover:border-blue-400 group-focus-within:border-blue-500 transition-all duration-300 hover:scale-105" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="group">
-                        <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                          Email Address *
-                        </label>
-                        <Input type="email" placeholder="Enter your email" required className="group-hover:border-blue-400 group-focus-within:border-blue-500 transition-all duration-300 hover:scale-105" />
-                      </div>
-                      <div className="group">
-                        <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                          Age
-                        </label>
-                        <Input placeholder="Enter your age" className="group-hover:border-blue-400 group-focus-within:border-blue-500 transition-all duration-300 hover:scale-105" />
-                      </div>
-                    </div>
-                    <div className="group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                        Service Required
-                      </label>
-                      <Select>
-                        <SelectTrigger className="group-hover:border-blue-400 group-focus-within:border-blue-500 transition-all duration-300 hover:scale-105">
-                          <SelectValue placeholder="Select the service you need" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
-                          {services.map((service) => (
-                            <SelectItem key={service} value={service.toLowerCase().replace(/\s+/g, '-')} className="hover:bg-blue-50 transition-colors duration-200">
-                              {service}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                        Message *
-                      </label>
-                      <Textarea
-                        placeholder="Tell me about your insurance requirements, questions, or how I can help you..."
-                        rows={5}
-                        required
-                        className="group-hover:border-blue-400 group-focus-within:border-blue-500 transition-all duration-300 hover:scale-105"
-                      />
-                    </div>
-                    <div className="flex items-start space-x-2 group">
-                      <input type="checkbox" id="consent" className="mt-1 hover:scale-110 transition-transform duration-300" required />
-                      <label htmlFor="consent" className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
-                        I agree to be contacted regarding LIC policies and services. Your information will be kept confidential. 🔒
-                      </label>
-                    </div>
-                    <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl">
-                      Send Message <Send className="ml-2 h-5 w-5" />
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
 
             {/* Map & Office Info */}
             <div className="space-y-8">
@@ -344,7 +380,7 @@ const Contact = () => {
               <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl">
                 <a href="tel:+919876543210">Schedule Free Consultation 📅</a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl">
+              <Button asChild size="lg" variant="outline" className="border-white hover:bg-gray-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl">
                 <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">
                   WhatsApp Me 💬
                 </a>

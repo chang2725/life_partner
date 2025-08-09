@@ -12,13 +12,31 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-white to-blue-50 text-gray-800 p-6">
+      {/* Animated Avatar */}
+      <div className="text-7xl animate-bounce mb-4">🧑‍💼</div>
+
+      {/* Talk Bubble */}
+      <div className="text-center animate-fade-in-up">
+        <h1 className="text-4xl font-extrabold mb-2">Lost on the Internet?</h1>
+        <p className="text-lg text-gray-600 mb-6">
+          Don't worry. Before the void claims you...<br />
+          <span className="inline-block mt-2 font-semibold text-blue-600 animate-pulse">
+            Get LIC Insurance with me!
+          </span>
+        </p>
+
+        <a
+          href="/life-insurance"
+          rel="noopener noreferrer"
+          className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all shadow-lg"
+        >
+          Secure Your Future 💼
         </a>
+
+        <p className="mt-4 text-sm text-gray-400">
+          Or just <a href="/" className="underline text-blue-500">go back home</a> 🏠
+        </p>
       </div>
     </div>
   );

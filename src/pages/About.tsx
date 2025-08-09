@@ -209,10 +209,10 @@ const About = () => {
             Let's discuss your insurance needs and find the perfect policy for you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-400">
               <Link to="/contact">Schedule Consultation</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+            <Button asChild size="lg" variant="outline" className="border-white text-blue-600 hover:bg-gray-400 hover:text-blue-600">
               <Link to="/life-insurance">View Policies</Link>
             </Button>
           </div>

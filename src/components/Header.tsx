@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import axios from 'axios';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,30 +50,26 @@ const Header = () => {
   //     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   //   }
   // ];
-
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || 'http://localhost:3000/api';
 
  useEffect(() => {
-  fetch("https://docs.google.com/spreadsheets/d/159sXke3QuEew4k2URQ67lVvadLYg8LKt2zhtFPVN4AY/gviz/tq?tqx=out:json&gid=0")
-    .then(res => res.text())
-    .then(text => {
-      const json = JSON.parse(text.substring(47).slice(0, -2));
-      const rows = json.table.rows;
+  const fetchHeroSection = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/HeroSection/agent/${AgentId}`);
+      if (response.data?.data) {
+        setHeaderSlides(response.data.data);
+      } else {
+        console.warn('⚠️ No header slides data received:', response.data);
+      }
+    } catch (error) {
+      console.error('❌ Failed to load hero section data:', error);
+      // Optionally, setHeaderSlides([]) here if you want to clear old data on error
+    }
+  };
 
-      // Treat first row as headers
-      const headers = rows[0].c.map(cell => cell?.v ?? '');
-      const data = rows.slice(1).map(row => {
-        return row.c.reduce((acc, cell, idx) => {
-          acc[headers[idx]] = cell?.v ?? '';
-          return acc;
-        }, {});
-      });
-
-      setHeaderSlides(data);
-      console.log("Slides from Sheet:", data);
-    })
-    .catch(err => console.error('Sheet fetch failed:', err));
-}, []);
-
+  fetchHeroSection();
+}, [AgentId]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,12 +80,6 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const getDriveImageURL = (url) => {
-  const match = url.match(/\/d\/(.+?)\//);
-  const id = match ? match[1] : '';
-  return `https://drive.google.com/uc?export=view&id=${id}`;
-};
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -220,7 +211,7 @@ const Header = () => {
                         className="bg-white text-blue-600 hover:bg-blue-50 transform hover:scale-105 transition-all duration-300 animate-fade-in"
                         style={{animationDelay: '0.4s'}}
                       >
-                        <Link to={slide.link}>{slide.action} ✨</Link>
+                        <Link to={slide.actionLink}>{slide.actionText} ✨</Link>
                       </Button>
                     </div>
                     <div className="relative group">
@@ -231,7 +222,7 @@ const Header = () => {
                             frameBorder="0"
                           /> */}
                           <img
-                            src={slide.image}
+                            src={slide.imageUrl}
                             alt={slide.title}
                             className="rounded-2xl shadow-2xl w-full h-64 md:h-80 transform group-hover:scale-105 transition-transform duration-500"
                           />
