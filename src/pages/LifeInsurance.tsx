@@ -8,61 +8,50 @@ import { useEffect, useState } from 'react';
 
 const LifeInsurance = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || '2'; // Fixed: This should be the agent ID, not API URL
+  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || '2';
   const [policies, setPolicies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Icon mapping function to convert string names to components
-  const getIconComponent = (iconName) => {
-    const iconMap = {
-      'Shield': Shield,
-      'TrendingUp': TrendingUp,
-      'Banknote': Banknote,
-      'Users': Users,
-      'Clock': Clock,
-      'Heart': Heart
-    };
-    return iconMap[iconName] || Shield; // Default to Shield if not found
-  };
 
- useEffect(() => {
-  const fetchPolicies = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/lifeInsurance/agent/${AgentId}`);
-      console.log("API response:", response.data);
 
-      if (Array.isArray(response.data.data)) {
-        const transformedPolicies = response.data.data.map(policy => ({
-          id: policy.id,
-          title: policy.Title,
-          subtitle: policy.Subtitle,
-          description: policy.DESCRIPTION,
-          icon: getIconComponent(policy.IconName),
-          color: policy.ColorClass,
-          ageRange: policy.AgeRange,
-          minPremium: policy.MinPremium,
-          popular: policy.Popular,
-          features: policy.Features || [],
-          plans: policy.Plans || []
-        }));
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/lifeInsurance/agent/${AgentId}`);
+        console.log("API response:", response.data);
 
-        setPolicies(transformedPolicies);
-      } else {
-        console.warn("⚠️ Expected array but got:", response.data.data);
+        if (Array.isArray(response.data.data)) {
+          const transformedPolicies = response.data.data.map(policy => ({
+            id: policy.id,
+            title: policy.Title,
+            subtitle: policy.Subtitle,
+            description: policy.DESCRIPTION,
+            image: policy.IconName,
+            color: policy.ColorClass,
+            ageRange: policy.AgeRange,
+            minPremium: policy.MinPremium,
+            popular: policy.Popular,
+            features: policy.Features || [],
+            plans: policy.Plans || []
+          }));
+
+          setPolicies(transformedPolicies);
+        } else {
+          console.warn("⚠️ Expected array but got:", response.data.data);
+        }
+      } catch (error) {
+        console.error("❌ Failed to load policies:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("❌ Failed to load policies:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  const timer = setTimeout(() => {
-    fetchPolicies();
-  }, 1000);
+    const timer = setTimeout(() => {
+      fetchPolicies();
+    }, 1000);
 
-  return () => clearTimeout(timer);
-}, [AgentId, API_BASE_URL]);
+    return () => clearTimeout(timer);
+  }, [AgentId, API_BASE_URL]);
 
   const benefits = [
     {
@@ -106,7 +95,7 @@ const LifeInsurance = () => {
               <span className="text-blue-600 block">Plans for Every Need</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Choose from a comprehensive range of life insurance policies designed to protect your family 
+              Choose from a comprehensive range of life insurance policies designed to protect your family
               and secure your financial future. Get expert guidance to find the perfect plan.
             </p>
           </div>
@@ -131,7 +120,7 @@ const LifeInsurance = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Choose Your Ideal Policy</h2>
             <p className="text-lg text-gray-600">Compare different types of LIC policies and find the one that suits your needs</p>
           </div>
-          
+
           {policies.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-600">No policies available at the moment.</p>
@@ -140,15 +129,19 @@ const LifeInsurance = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {policies.map((policy) => (
                 <Card key={policy.id} className="relative border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  {policy.popular && (
-                    <Badge className="absolute -top-3 left-6 bg-blue-600 text-white">Most Popular</Badge>
-                  )}
+                  <img
+                    src={policy.image || "/default-policy.avif"}
+                    alt={policy.title}
+                    className="w-full object-cover"
+                    onError={(e) => { e.currentTarget.src = "/default-policy.avif"; }}
+                    loading="lazy"
+                  />
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-lg ${policy.color} flex items-center justify-center`}>
+                        {/* <div className={`w-12 h-12 rounded-lg ${policy.color} flex items-center justify-center`}>
                           <policy.icon className="h-6 w-6" />
-                        </div>
+                        </div> */}
                         <div>
                           <CardTitle className="text-xl">{policy.title}</CardTitle>
                           <CardDescription className="text-sm font-medium text-blue-600">
@@ -156,11 +149,19 @@ const LifeInsurance = () => {
                           </CardDescription>
                         </div>
                       </div>
+                      {policy.popular && (
+                        <Badge
+                          className="self-start text-xs px-2 py-1 rounded-full bg-blue-600 text-white"
+                          aria-label="Most Popular"
+                        >
+                          Most Popular
+                        </Badge>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <p className="text-gray-600">{policy.description}</p>
-                    
+
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="font-medium text-gray-900">Age Range:</span>

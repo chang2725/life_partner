@@ -90,7 +90,7 @@ const Blog = () => {
     return () => clearTimeout(timer);
   }, [AgentId]);
 
-  const categories = ['All', 'Life Insurance', 'Tax Planning', 'Financial Planning', 'Investment', 'Retirement'];
+  const categories = ['All', 'Life Insurance', 'Tax Planning', 'Financial Planning', 'Investment', 'Retirement', "Wealth Management", 'Others'];
   const featuredPosts = blogPosts.filter(post => post.featured);
   const regularPosts = blogPosts.filter(post => !post.featured);
 
@@ -289,7 +289,7 @@ const Blog = () => {
                 <Card key={post.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-md overflow-hidden bg-white">
                   <div className="relative overflow-hidden">
                     <img
-                      src={post.imageUrl}
+                      src={post.imageUrl || 'LIC.png'}
                       alt={post.title}
                       className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
                     />

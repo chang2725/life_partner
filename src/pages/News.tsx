@@ -1,4 +1,4 @@
-import { Calendar, ExternalLink, TrendingUp, AlertCircle, Award, Newspaper, Star, Clock } from 'lucide-react';
+import { Calendar, ExternalLink, TrendingUp, AlertCircle, Award, Newspaper, Star, Clock, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,11 @@ interface NewsItem {
   headline: string;
   url: string;
   imageUrl: string;
+  summary?: string;
+  author?: string | null;
+  publishedAt?: string | null;
+  rawTimeText?: string;
+  source?: string;
 }
 
 interface QuickUpdate {
@@ -21,7 +26,7 @@ const News = () => {
   const [isLoading, setIsLoading] = useState(true);
    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
-  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || 'http://localhost:3000/api';
+  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || 'http://localhost:3000/api';
   const quickUpdates: QuickUpdate[] = [
     { title: 'Premium Payment Deadline Extended', description: 'LIC extends grace period for premium payments due to festive season', type: 'info' },
     { title: 'New Branch Opening', description: 'LIC opens 50 new branches across tier-2 and tier-3 cities', type: 'success' },
@@ -31,7 +36,7 @@ const News = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/NEWS?id=${AgentId}`); // Replace with actual API endpoint
+        const response = await fetch(`${API_BASE_URL}/api/NEWS/50`); // Replace with actual API endpoint
         const data = await response.json();
         setNewsArticles(data.data || []);
       } catch (error) {
@@ -54,6 +59,25 @@ const News = () => {
     } catch {
       return dateString;
     }
+  };
+
+  const formatRawTimeText = (rawTimeText: string) => {
+    // Extract just the date part from "Updated: August 13, 2025 15:00 IST"
+    if (rawTimeText && rawTimeText.includes(':')) {
+      const parts = rawTimeText.split(':');
+      if (parts.length > 1) {
+        return parts.slice(1).join(':').trim();
+      }
+    }
+    return rawTimeText;
+  };
+
+  const getSourceDisplayName = (source: string) => {
+    // Extract readable source name from URL
+    if (source && source.startsWith('www.')) {
+      return source.replace('www.', '').split('.')[0].toUpperCase();
+    }
+    return source || 'Unknown Source';
   };
 
   const getUpdateIcon = (type: string) => {
@@ -199,9 +223,15 @@ const News = () => {
                       src={article.imageUrl} 
                       alt={article.headline} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://via.placeholder.com/400x225/1f2937/ffffff?text=LIC+News';
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <Badge className="absolute top-4 right-4 bg-blue-600 text-white shadow-lg">News</Badge>
+                    <Badge className="absolute top-4 right-4 bg-blue-600 text-white shadow-lg">
+                      {article.source ? getSourceDisplayName(article.source) : 'News'}
+                    </Badge>
                   </div>
                   
                   <CardHeader className="flex-grow p-6 pb-4">
@@ -211,12 +241,22 @@ const News = () => {
                   </CardHeader>
                   
                   <CardContent className="p-6 pt-0">
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <Calendar className="inline h-4 w-4 mr-2" />
-                      {formatDate(new Date().toISOString())}
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                      <div className="flex items-center">
+                        <Calendar className="inline h-4 w-4 mr-2" />
+                        {article.rawTimeText ? formatRawTimeText(article.rawTimeText) : 
+                         article.publishedAt ? formatDate(article.publishedAt) : 
+                         formatDate(new Date().toISOString())}
+                      </div>
+                      {article.author && (
+                        <div className="flex items-center">
+                          <User className="inline h-4 w-4 mr-1" />
+                          <span className="truncate max-w-20">{article.author}</span>
+                        </div>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
-                      {article.headline} - Click to read the complete article and stay updated with the latest developments.
+                      {article.summary || `${article.headline} - Click to read the complete article and stay updated with the latest developments.`}
                     </p>
                   </CardContent>
                   
