@@ -65,6 +65,34 @@ const Blog = () => {
     }
   ];
 
+  
+  const formatFileUrl = (url) => {
+    if (!url) return "";
+
+    // Handle Dropbox links
+    if (url.includes("dropbox")) {
+      return url.replace("dl=0", "raw=1");
+    }
+
+    // Handle Google Drive links
+    if (url.includes("drive.google.com")) {
+    // extract file id
+    let id =
+      url.match(/\/file\/d\/([^/]+)/)?.[1] ||
+      url.match(/\/d\/([^/]+)/)?.[1] ||
+      new URL(url).searchParams.get("id");
+
+    if (id) {
+      // use export=download — this won’t revert
+      return `https://drive.google.com/uc?export=download&id=${id}`;
+    }
+  }
+
+    // Fallback: return as-is
+    return url;
+  };
+
+
   useEffect(() => {
     const fetchBlogPosts = async () => {
       try {
@@ -289,7 +317,7 @@ const Blog = () => {
                 <Card key={post.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-md overflow-hidden bg-white">
                   <div className="relative overflow-hidden">
                     <img
-                      src={post.imageUrl || 'LIC.png'}
+                      src={formatFileUrl(post.imageUrl) || 'LIC.png'}
                       alt={post.title}
                       className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -303,17 +331,14 @@ const Blog = () => {
                     </CardTitle>
                     <div className="flex items-center space-x-4 text-xs text-gray-600 pt-2">
                       <div className="flex items-center space-x-1">
-                        <User className="h-3 w-3" />
+                        <User className="h-3 w-6" />
                         <span>{post.author}</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <Calendar className="h-3 w-3" />
+                        <Calendar className="h-3 w-6" />
                         <span>{formatDate(post.publishedDate)}</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{post.readTime}</span>
-                      </div>
+                     
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0 px-6 pb-6">

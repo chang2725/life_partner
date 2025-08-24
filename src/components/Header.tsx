@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Shield, Phone, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -53,23 +53,51 @@ const Header = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
   const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || 'http://localhost:3000/api';
 
- useEffect(() => {
-  const fetchHeroSection = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/HeroSection/agent/${AgentId}`);
-      if (response.data?.data) {
-        setHeaderSlides(response.data.data);
-      } else {
-        console.warn('⚠️ No header slides data received:', response.data);
-      }
-    } catch (error) {
-      console.error('❌ Failed to load hero section data:', error);
-      // Optionally, setHeaderSlides([]) here if you want to clear old data on error
+  const formatFileUrl = (url) => {
+    if (!url) return "";
+
+    // Handle Dropbox links
+    if (url.includes("dropbox")) {
+      return url.replace("dl=0", "raw=1");
     }
+
+    // Handle Google Drive links
+    if (url.includes("drive.google.com")) {
+    // extract file id
+    let id =
+      url.match(/\/file\/d\/([^/]+)/)?.[1] ||
+      url.match(/\/d\/([^/]+)/)?.[1] ||
+      new URL(url).searchParams.get("id");
+
+    if (id) {
+      // use export=download — this won’t revert
+      return `https://drive.google.com/uc?export=download&id=${id}`;
+    }
+  }
+
+    // Fallback: return as-is
+    return url;
   };
 
-  fetchHeroSection();
-}, [AgentId]);
+
+
+  useEffect(() => {
+    const fetchHeroSection = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/HeroSection/agent/${AgentId}`);
+        if (response.data?.data) {
+          setHeaderSlides(response.data.data);
+        } else {
+          console.warn('⚠️ No header slides data received:', response.data);
+        }
+      } catch (error) {
+        console.error('❌ Failed to load hero section data:', error);
+        // Optionally, setHeaderSlides([]) here if you want to clear old data on error
+      }
+    };
+
+    fetchHeroSection();
+  }, [AgentId]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,11 +114,10 @@ const Header = () => {
   return (
     <>
       {/* Main Header */}
-      <header className={`sticky top-0 z-50 transition-all duration-500 ${
-        scrolled 
-          ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-blue-100 py-2' 
+      <header className={`sticky top-0 z-50 transition-all duration-500 ${scrolled
+          ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-blue-100 py-2'
           : 'bg-white/80 backdrop-blur-md shadow-sm border-b border-blue-100 py-3'
-      }`}>
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -111,17 +138,15 @@ const Header = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`text-sm font-medium transition-all duration-300 hover:text-blue-600 hover:scale-105 relative group ${
-                    isActive(item.path) 
-                      ? 'text-blue-600' 
+                  className={`text-sm font-medium transition-all duration-300 hover:text-blue-600 hover:scale-105 relative group ${isActive(item.path)
+                      ? 'text-blue-600'
                       : 'text-gray-700'
-                  }`}
+                    }`}
                   style={{ transitionDelay: `${index * 50}ms` }}
                 >
                   {item.name}
-                  <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 group-hover:w-full ${
-                    isActive(item.path) ? 'w-full' : ''
-                  }`}></span>
+                  <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 group-hover:w-full ${isActive(item.path) ? 'w-full' : ''
+                    }`}></span>
                 </Link>
               ))}
             </nav>
@@ -158,12 +183,11 @@ const Header = () => {
                     key={item.name}
                     to={item.path}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`block px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 hover:scale-105 transform ${
-                      isActive(item.path)
+                    className={`block px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 hover:scale-105 transform ${isActive(item.path)
                         ? 'text-blue-600 bg-gradient-to-r from-blue-50 to-purple-50 shadow-sm'
                         : 'text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50'
-                    }`}
-                    style={{ 
+                      }`}
+                    style={{
                       animationDelay: `${index * 100}ms`,
                       animation: 'fade-in 0.5s ease-out forwards'
                     }}
@@ -202,34 +226,27 @@ const Header = () => {
                       <h3 className="text-2xl md:text-4xl font-bold animate-fade-in">
                         {slide.title}
                       </h3>
-                      <p className="text-base md:text-lg text-blue-100 animate-fade-in" style={{animationDelay: '0.2s'}}>
+                      <p className="text-base md:text-lg text-blue-100 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                         {slide.subtitle}
                       </p>
-                      <Button 
-                        asChild 
-                        size="lg" 
+                      <Button
+                        asChild
+                        size="lg"
                         className="bg-white text-blue-600 hover:bg-blue-50 transform hover:scale-105 transition-all duration-300 animate-fade-in"
-                        style={{animationDelay: '0.4s'}}
+                        style={{ animationDelay: '0.4s' }}
                       >
                         <Link to={slide.actionLink}>{slide.actionText} ✨</Link>
                       </Button>
                     </div>
                     <div className="relative group">
-                      <div className="absolute -inset-4 bg-gradient-to-r from-white/20 to-purple-400/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
-                        {/* <iframe
-                            src={slide.image.replace("/view?usp=sharing", "/preview")}
-                            className="rounded-2xl shadow-2xl w-full h-64 md:h-80 transform group-hover:scale-105 transition-transform duration-500"
-                            frameBorder="0"
-                          /> */}
-                          <img
-                            src={slide.imageUrl}
-                            alt={slide.title}
-                            className="rounded-2xl shadow-2xl w-full h-64 md:h-80 transform group-hover:scale-105 transition-transform duration-500"
-                          />
-                      {/* <div
-  className="rounded-2xl shadow-2xl w-full h-64 md:h-80 bg-cover bg-center"
-  style={{ backgroundImage: `url(${slide.image})` }}
-></div> */}
+                      <div className="absolute -inset-4 bg-gradient-to-r from-white/20 to-purple-400/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500">
+                      </div>
+                      <img
+                        src={formatFileUrl(slide.imageUrl)}
+                        alt={slide.title}
+                        className="rounded-2xl shadow-2xl w-full h-64 md:h-80 transform group-hover:scale-105 transition-transform duration-500"
+                      />
+
                     </div>
                   </div>
                 </CarouselItem>

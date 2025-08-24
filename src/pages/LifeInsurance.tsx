@@ -13,6 +13,32 @@ const LifeInsurance = () => {
   const [isLoading, setIsLoading] = useState(true);
 
 
+  const formatFileUrl = (url) => {
+    if (!url) return "";
+
+    // Handle Dropbox links
+    if (url.includes("dropbox")) {
+      return url.replace("dl=0", "raw=1");
+    }
+
+    // Handle Google Drive links
+    if (url.includes("drive.google.com")) {
+    // extract file id
+    let id =
+      url.match(/\/file\/d\/([^/]+)/)?.[1] ||
+      url.match(/\/d\/([^/]+)/)?.[1] ||
+      new URL(url).searchParams.get("id");
+
+    if (id) {
+      // use export=download — this won’t revert
+      return `https://drive.google.com/uc?export=download&id=${id}`;
+    }
+  }
+
+    // Fallback: return as-is
+    return url;
+  };
+
 
   useEffect(() => {
     const fetchPolicies = async () => {
@@ -130,7 +156,7 @@ const LifeInsurance = () => {
               {policies.map((policy) => (
                 <Card key={policy.id} className="relative border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <img
-                    src={policy.image || "/default-policy.avif"}
+                    src={formatFileUrl(policy.image) || "/default-policy.avif"}
                     alt={policy.title}
                     className="w-full object-cover"
                     onError={(e) => { e.currentTarget.src = "/default-policy.avif"; }}
