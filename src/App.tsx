@@ -12,6 +12,7 @@ import News from './pages/News';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
+import PlanDetailsPage from './pages/PlanDetailsPage';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -31,6 +32,8 @@ function App() {
               <Route path="/news" element={<News />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/plan-details/:planName" element={<PlanDetailsPage />} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

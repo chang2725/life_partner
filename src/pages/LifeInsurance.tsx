@@ -23,17 +23,17 @@ const LifeInsurance = () => {
 
     // Handle Google Drive links
     if (url.includes("drive.google.com")) {
-    // extract file id
-    let id =
-      url.match(/\/file\/d\/([^/]+)/)?.[1] ||
-      url.match(/\/d\/([^/]+)/)?.[1] ||
-      new URL(url).searchParams.get("id");
+      // extract file id
+      let id =
+        url.match(/\/file\/d\/([^/]+)/)?.[1] ||
+        url.match(/\/d\/([^/]+)/)?.[1] ||
+        new URL(url).searchParams.get("id");
 
-    if (id) {
-      // use export=download — this won’t revert
-      return `https://drive.google.com/uc?export=download&id=${id}`;
+      if (id) {
+        // use export=download — this won’t revert
+        return `https://drive.google.com/uc?export=download&id=${id}`;
+      }
     }
-  }
 
     // Fallback: return as-is
     return url;
@@ -218,9 +218,18 @@ const LifeInsurance = () => {
                         <h4 className="font-medium text-gray-900 mb-2">Popular Plans:</h4>
                         <div className="flex flex-wrap gap-2">
                           {policy.plans.map((plan, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {plan}
-                            </Badge>
+                            <Link
+                              key={index}
+                              to={`/plan-details/${encodeURIComponent(plan)}`}
+                              className="inline-flex"
+                            >
+                              <Badge
+                                variant="secondary"
+                                className="text-xs cursor-pointer hover:bg-gray-300 transition-colors"
+                              >
+                                {plan}
+                              </Badge>
+                            </Link>
                           ))}
                         </div>
                       </div>
