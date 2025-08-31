@@ -49,7 +49,7 @@ const PlanDetailsPage = () => {
                     setPlanDetails(null);
                 } else {
                     const response = await axios.get(
-                        `${API_BASE_URL}/api/Plans/byname/${decodedPlanName}`
+                        `${API_BASE_URL}/api/Plans/byname/${decodedPlanName}/${AgentId}`
                     );
 
                     if (!response.data.data[0] || response.data.data[0].name !== decodedPlanName) {
@@ -64,7 +64,7 @@ const PlanDetailsPage = () => {
                         };
                         setPlanDetails(normalized);
                         const response2 = await axios.get(
-                            `${API_BASE_URL}/api/Plans/RelatedPlans/${normalized.category}`
+                            `${API_BASE_URL}/api/Plans/RelatedPlans/${normalized.category}/${AgentId}`
                         );
                         const data = response2.data.data;
                         console.log("Fetched plan data:", data);
