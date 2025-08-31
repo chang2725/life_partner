@@ -21,7 +21,7 @@ const Home = () => {
   const sectionRef = useRef(null);
   const [testimonials, setTestimonials] = useState([]);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN || 'http://localhost:3000/api';
+  const AgentId = import.meta.env.VITE_API_AUTH_TOKEN;
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -51,11 +51,11 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     serviceRequired: formData.serviceRequired,
     messageText: formData.message,
     agentId: formData.agentId,
-    status: "Active"  // You can make this dynamic if needed
+    status: "Y"
   };
 
   try {
-    const response = await axios.post('https://localhost:7024/api/ContactDetail', payload);
+    const response = await axios.post(`${API_BASE_URL}api/ContactDetail`, payload);
     console.log('Success:', response.data);
     alert('✅ Your message has been sent successfully!');
     setFormData({

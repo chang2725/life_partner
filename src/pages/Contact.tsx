@@ -88,11 +88,11 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     serviceRequired: formData.serviceRequired,
     messageText: formData.message,
     agentId: formData.agentId,
-    status: "Active"  // You can make this dynamic if needed
+    status: "Y"  
   };
 
   try {
-    const response = await axios.post('https://localhost:7024/api/ContactDetail', payload);
+    const response = await axios.post(`${API_BASE_URL}api/ContactDetail`, payload);
     console.log('Success:', response.data);
     alert('✅ Your message has been sent successfully!');
     setFormData({
